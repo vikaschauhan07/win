@@ -81,7 +81,7 @@ class AuthController extends Controller
             
             return $this->success([], 200);
         } catch(Exception $ex){
-            return $this->error("Server error",[], 500);
+            return $this->error("Server error", 500);
         }
     }
 
@@ -96,22 +96,22 @@ class AuthController extends Controller
             if($user){
                 $code = random_int(100000, 999999);
                 User::setResetCodeUsed($code,$user->userid);
-                Mail::to($user->email)->send(new ForgotPasswordMail($code));
-                $this->sucess(['id' => md5($user->userid)],200);
+                // Mail::to($user->email)->send(new ForgotPasswordMail($code));
+                return $this->success([
+                    'id' => $user->id
+                ],200);
             }
-            $this->error("User not found",[],404);
+            return $this->error("User not found",404);
         } catch(Exception $ex){
-            return $this->error("Server error",[], 500);
+            return $this->error("Server error", 500);
         }
         
     }
     public function resetPassword(ResetPasswordRequest $request,$id){
         try{
-            
-            $userId = User::whereRaw('md5(id) = ?', [$id])->value('id');
-            $user = User::where("userid",$userId)->first();
+            $user = User::where("id",$id)->first();
             if ($user) {
-                $resetCode = ResetToekns::where('userid', $userId)
+                $resetCode = ResetToekns::where('userid', $user->userid)
                     ->where('code', $request->input('code'))
                     ->where('used', 0)
                     ->first();
@@ -123,14 +123,14 @@ class AuthController extends Controller
                     $resetCode->save();
                     return $this->success([],200);
                 } else {
-                    return $this->error("Invalid reset Toekn",[],404);
+                    return $this->error("Invalid reset Toekn",404);
 
                 }
             } else {
-                return $this->error("invalid user",[],404);
+                return $this->error("Invalid user",404);
             }
         }catch(Exception $ex){
-            return $this->error("Server error",[], 500);
+            return $this->error("Server error", 500);
         }
     }
     

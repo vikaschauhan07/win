@@ -16,7 +16,7 @@ class VerifyUserToken
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && Auth::user()) {
+        if (Auth::guard("users")->check() && Auth::guard("users")->user()) {
             return $next($request);
         }
         return response()->json(['message' => 'Unauthorized',"data" => []], 401);
