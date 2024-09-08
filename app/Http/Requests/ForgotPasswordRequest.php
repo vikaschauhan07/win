@@ -31,7 +31,7 @@ class ForgotPasswordRequest extends FormRequest
     {
         $response = response()->json([
             'status' => 'error',
-            'errors' => $validator->errors()
+            'errors' => $validator->errors()->all()
         ], 422);
 
         throw new \Illuminate\Validation\ValidationException($validator, $response);
